@@ -1,4 +1,4 @@
-package me.squanderingti.dynamicproblems;
+package me.squanderingti.dynamicproblems.problems;
 
 public class InputNode extends Node {
     public InputNode() {

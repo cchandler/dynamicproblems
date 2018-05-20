@@ -1,17 +1,20 @@
-package me.squanderingti.dynamicproblems;
+package me.squanderingti.dynamicproblems.problems;
 
-import org.springframework.data.annotation.Reference;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.redis.core.RedisHash;
 
 import javax.validation.constraints.NotNull;
 
+@RedisHash("Relationship")
 public class Relationship {
     public enum Operation {
         ADD, SUBTRACT, MULTIPLY, DIVIDE
     }
 
-    Operation operation;
-    Double operand;
-    @Reference Node target;
+    public Operation operation;
+    public Double operand;
+    public String targetName;
+    @Transient public Node target;
 
     public void apply(@NotNull Double sourceValue) {
         Double result;
@@ -40,7 +43,7 @@ public class Relationship {
         return "Relationship{" +
                 "operation=" + operation +
                 ", operand=" + operand +
-                ", target=" + target +
+                ", target=" + target.name +
                 '}';
     }
 }

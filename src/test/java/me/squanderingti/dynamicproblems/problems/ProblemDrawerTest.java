@@ -1,21 +1,21 @@
-package me.squanderingti.dynamicproblems;
+package me.squanderingti.dynamicproblems.problems;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.List;
-
-public class ProblemTest {
+public class ProblemDrawerTest {
     @Test
-    public void testBasicProblem() throws Exception {
+    public void drawDOTTest() {
         Problem p = new Problem();
         p.name = "test test";
 
         InputNode input = new InputNode();
+        input.name = "input";
         input.initialValue = Double.valueOf(1.0);
         input.valuesAtTime.add(Double.valueOf(1.0));
 
         OutputNode output = new OutputNode();
+        output.name = "output";
         output.initialValue = Double.valueOf(0.0);
         output.valuesAtTime.add(Double.valueOf(0.0));
 
@@ -35,17 +35,12 @@ public class ProblemTest {
         p.nodeList.add(input);
         p.nodeList.add(output);
 
-        p.calculateNextStep();
-        p.calculateNextStep();
-        p.calculateNextStep();
-
-        List<Node> outs = p.getOuputNodes();
-        Assert.assertEquals(outs.size(), 1);
-
-        Double expectedIns[] = {1.0, 1.0, 1.0, 1.0};
-        Assert.assertArrayEquals(expectedIns, input.valuesAtTime.toArray());
-
-        Double expectedOuts[] = {0.0, 3.0, 7.5, 14.25};
-        Assert.assertArrayEquals(expectedOuts, outs.get(0).valuesAtTime.toArray());
+        ProblemDrawer pd = new ProblemDrawer(p);
+        String result = pd.drawDOT();
+        String expected = "digraph {\n" +
+                "\"input[1.0]\" -> \"output[0.0]\" [ label=\" ADD 2.0\" ];\n" +
+                "\"output[0.0]\" -> \"output[0.0]\" [ label=\" MULTIPLY 1.5\" ];\n" +
+                "}";
+        Assert.assertEquals(expected, result);
     }
 }

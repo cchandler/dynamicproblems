@@ -1,4 +1,4 @@
-package me.squanderingti.dynamicproblems;
+package me.squanderingti.dynamicproblems.api;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

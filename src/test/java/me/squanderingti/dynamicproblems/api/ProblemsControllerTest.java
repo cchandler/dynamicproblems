@@ -1,4 +1,4 @@
-package me.squanderingti.dynamicproblems;
+package me.squanderingti.dynamicproblems.api;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

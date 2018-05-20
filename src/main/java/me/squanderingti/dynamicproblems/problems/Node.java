@@ -1,6 +1,9 @@
-package me.squanderingti.dynamicproblems;
+package me.squanderingti.dynamicproblems.problems;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.LinkedList;
@@ -11,14 +14,19 @@ import java.util.List;
  */
 @RedisHash("Node")
 public abstract class Node {
+    @Transient
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Id
     public String id;
 
-    List<Double> valuesAtTime;
-    Double initialValue;
+    public String name;
 
-    List<Double> mailbox;
-    List<Relationship> relationships;
+    public List<Double> valuesAtTime;
+    public Double initialValue;
+
+    protected List<Double> mailbox;
+    public List<Relationship> relationships;
 
     public Node() {
         valuesAtTime = new LinkedList<>();
@@ -37,6 +45,22 @@ public abstract class Node {
     }
 
     public void processMailbox(Integer timeStep) {
+        if(this instanceof InputNode) {
+            // Input nodes shouldn't have incoming relationships
+            if(!mailbox.isEmpty()) {
+                throw new IllegalStateException("Input nodes shouldn't have incoming relationships!");
+            } else {
+                // A step was calculated but an input was unspecified.
+                // Repeat the last value.
+                if(valuesAtTime.size() <= timeStep) {
+                    log.debug("An additional input was unspecified on [{}]. Repeating previous [{}].", name, getLastValue());
+                    Double lastValue = getLastValue();
+                    valuesAtTime.add(lastValue);
+                }
+            }
+            return;
+        }
+
         if(mailbox.isEmpty()) {
             // Copy the last value since the mailbox was empty.
             Double lastValue = valuesAtTime.get(valuesAtTime.size() - 1);
@@ -51,10 +75,14 @@ public abstract class Node {
         }
     }
 
+    public String graphName() {
+        return "\"" + name + "[" + initialValue + "]\"";
+    }
+
     @Override
     public String toString() {
         return "Node{" +
-                "id='" + id + '\'' +
+                "name='" + name + '\'' +
                 ", valuesAtTime=" + valuesAtTime +
                 ", initialValue=" + initialValue +
                 ", mailbox=" + mailbox +
