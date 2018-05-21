@@ -58,6 +58,10 @@ public class ProblemsController {
     @PostMapping(produces = MediaType.APPLICATION_JSON)
     public Map<String, String> createProblem(@RequestBody ProblemBuilder problemBuilder) {
         Problem p = problemBuilder.buildProblem();
+        // Calculate the first three steps
+        p.calculateNextStep();
+        p.calculateNextStep();
+        p.calculateNextStep();
         problemRepository.save(p);
         return Collections.singletonMap("Created", p.id);
     }
