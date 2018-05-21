@@ -14,6 +14,7 @@ public class Relationship {
     public Operation operation;
     public Double operand;
     public String targetName;
+    @Transient public Node source;
     @Transient public Node target;
 
     public void apply(@NotNull Double sourceValue) {

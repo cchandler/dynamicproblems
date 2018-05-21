@@ -22,6 +22,8 @@ public class ProblemBuilder {
         outputNodes = 0;
         hiddenNodes = 0;
         relationships = 0;
+
+        allowSelfReference = true;
     }
 
     protected Double initialValue() {
@@ -67,7 +69,8 @@ public class ProblemBuilder {
         List<Node> combinedPossibleOutputs = new ArrayList<>();
         combinedPossibleOutputs.addAll(hiddenNodeList);
         combinedPossibleOutputs.addAll(outputNodeList);
-        for(int i = 0; i < relationships; i++) {
+        int relationshipsCreated = 0;
+        while(relationshipsCreated < relationships) {
             // Choose a random feasible input
             int idxInput = random.nextInt(combinedPossibleInputs.size());
             int idxOutput = random.nextInt(combinedPossibleOutputs.size());
@@ -75,6 +78,7 @@ public class ProblemBuilder {
             Relationship r = new Relationship();
             Node inputNode = combinedPossibleInputs.get(idxInput);
             Node outputNode = combinedPossibleOutputs.get(idxOutput);
+            r.source = inputNode;
             r.target = outputNode;
             r.targetName = outputNode.name;
             r.operand = (double) (random.nextInt(5) + 1);
@@ -94,7 +98,12 @@ public class ProblemBuilder {
                 default:
                     throw new IllegalStateException("Invalid random");
             }
-            inputNode.relationships.add(r);
+
+            if(validRelationship(r)) {
+                inputNode.relationships.add(r);
+                ++relationshipsCreated;
+            }
+
         }
 
         p.nodeList.addAll(inputNodeList);
@@ -102,5 +111,12 @@ public class ProblemBuilder {
         p.nodeList.addAll(hiddenNodeList);
 
         return p;
+    }
+
+    private boolean validRelationship(Relationship r) {
+        if(! allowSelfReference) {
+            if(r.source.equals(r.target)) { return false; }
+        }
+        return true;
     }
 }
